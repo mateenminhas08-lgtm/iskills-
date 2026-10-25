@@ -1,0 +1,1357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>iSkills Hub</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8E%93%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy-900:#07162c;
+  --navy-800:#0d2242;
+  --navy-700:#13315c;
+  --blue-accent:#3b82f6;
+  --blue-accent-dark:#2563eb;
+  --blue-light:#dbeafe;
+  --blue-soft:#eff6ff;
+  --white:#ffffff;
+  --gray-50:#f6f8fb;
+  --gray-100:#f1f5f9;
+  --gray-200:#e2e8f0;
+  --gray-300:#cbd5e1;
+  --gray-400:#94a3b8;
+  --gray-600:#475569;
+  --gray-700:#334155;
+  --gray-800:#1e293b;
+  --danger:#ef4444;
+  --success:#16a34a;
+  --gold:#f59e0b;
+  --radius:14px;
+  --shadow: 0 2px 10px rgba(15,37,68,0.06), 0 10px 30px rgba(15,37,68,0.04);
+  --shadow-lg: 0 20px 50px rgba(7,22,44,0.18);
+}
+*,*::before,*::after{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{
+  font-family:'Inter',system-ui,sans-serif;
+  background:var(--gray-50);
+  color:var(--gray-800);
+  -webkit-font-smoothing:antialiased;
+}
+a{color:inherit;text-decoration:none;}
+button{font-family:inherit;}
+.hidden{display:none !important;}
+::-webkit-scrollbar{width:8px;height:8px;}
+::-webkit-scrollbar-thumb{background:var(--gray-300);border-radius:10px;}
+::-webkit-scrollbar-thumb:hover{background:var(--gray-400);}
+
+/* ---------- TOPBAR ---------- */
+#topbar{
+  position:fixed;top:0;left:0;right:0;height:64px;background:#fff;
+  border-bottom:1px solid var(--gray-200);display:flex;align-items:center;gap:14px;
+  padding:0 18px;z-index:200;box-shadow:0 1px 3px rgba(0,0,0,0.03);
+}
+.hamburger-btn{
+  display:none;background:var(--gray-100);border:none;width:38px;height:38px;border-radius:10px;
+  align-items:center;justify-content:center;font-size:1.05rem;color:var(--navy-900);cursor:pointer;flex-shrink:0;
+}
+.logo{
+  display:flex;align-items:center;gap:8px;font-weight:800;font-size:1.15rem;color:var(--navy-900);
+  white-space:nowrap;flex-shrink:0;cursor:pointer;
+}
+.logo .emoji{font-size:1.4rem;}
+.logo span.sub{font-weight:500;color:var(--blue-accent-dark);font-size:.72rem;display:block;letter-spacing:.5px;}
+.topbar-search{position:relative;flex:1;max-width:420px;}
+.topbar-search i{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--gray-400);font-size:.9rem;}
+.topbar-search input{
+  width:100%;padding:9px 14px 9px 36px;border-radius:999px;border:1px solid var(--gray-200);
+  background:var(--gray-100);font-size:.88rem;transition:.15s;
+}
+.topbar-search input:focus{outline:none;border-color:var(--blue-accent);background:#fff;box-shadow:0 0 0 3px var(--blue-soft);}
+.pinned-chips{display:flex;align-items:center;gap:8px;overflow-x:auto;flex:1;scrollbar-width:none;}
+.pinned-chips::-webkit-scrollbar{display:none;}
+.chip{
+  display:flex;align-items:center;gap:6px;background:var(--blue-soft);color:var(--navy-800);
+  padding:6px 12px;border-radius:999px;font-size:.78rem;font-weight:600;white-space:nowrap;cursor:pointer;
+  border:1px solid var(--blue-light);transition:.15s;flex-shrink:0;
+}
+.chip:hover{background:var(--blue-light);transform:translateY(-1px);}
+.chip img{width:14px;height:14px;border-radius:3px;}
+.chip-empty{font-size:.78rem;color:var(--gray-400);font-style:italic;}
+.topbar-right{display:flex;align-items:center;gap:10px;flex-shrink:0;margin-left:auto;}
+.btn-add-top{
+  background:var(--navy-900);color:#fff;border:none;border-radius:10px;padding:9px 14px;font-weight:600;font-size:.85rem;
+  cursor:pointer;display:flex;align-items:center;gap:6px;transition:.15s;
+}
+.btn-add-top:hover{background:var(--blue-accent-dark);}
+
+/* ---------- LAYOUT ---------- */
+.layout{display:flex;margin-top:64px;min-height:calc(100vh - 64px);}
+#sidebarBackdrop{position:fixed;inset:64px 0 0 0;background:rgba(7,22,44,.5);z-index:150;display:none;}
+#sidebarBackdrop.show{display:block;}
+#sidebar{
+  width:264px;background:linear-gradient(195deg,var(--navy-900),var(--navy-800) 60%,var(--navy-700));
+  color:#cbd5e1;position:fixed;top:64px;bottom:0;left:0;overflow-y:auto;padding:18px 12px 100px;
+  z-index:180;transition:transform .25s ease;
+}
+.nav-section-label{
+  font-size:.68rem;text-transform:uppercase;letter-spacing:1px;color:#7e93b8;font-weight:700;
+  margin:18px 10px 8px;display:flex;align-items:center;justify-content:space-between;
+}
+.nav-section-label button{background:rgba(255,255,255,.08);border:none;color:#cbd5e1;width:20px;height:20px;border-radius:6px;cursor:pointer;font-size:.7rem;}
+.nav-section-label button:hover{background:rgba(255,255,255,.18);}
+.nav-item{
+  display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;cursor:pointer;
+  color:#dbe4f3;font-size:.9rem;font-weight:500;margin-bottom:3px;transition:.12s;
+}
+.nav-item i{width:18px;text-align:center;color:#8fa7cf;}
+.nav-item:hover{background:rgba(255,255,255,.08);color:#fff;}
+.nav-item.active{background:var(--blue-accent);color:#fff;}
+.nav-item.active i{color:#fff;}
+.module-tree{list-style:none;margin:0;padding:0;}
+.module-row{display:flex;align-items:center;gap:6px;padding:8px 6px;border-radius:9px;cursor:pointer;font-size:.86rem;color:#dbe4f3;transition:.12s;}
+.module-row:hover{background:rgba(255,255,255,.07);}
+.module-row.active{background:var(--blue-accent);color:#fff;}
+.module-row.active .module-actions button{color:#e7f0ff;}
+.module-row.active i.mod-icon{color:#fff;}
+.module-item{position:relative;}
+.chevron{width:14px;flex-shrink:0;text-align:center;color:#7e93b8;font-size:.7rem;cursor:pointer;}
+.module-name{flex:1;display:flex;align-items:center;gap:7px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.module-name i.mod-icon{color:#8fa7cf;font-size:.8rem;}
+.module-actions{display:flex;gap:2px;opacity:.55;flex-shrink:0;}
+.module-row:hover .module-actions{opacity:1;}
+.module-actions button{background:transparent;border:none;color:#bcd0ee;width:22px;height:22px;border-radius:6px;cursor:pointer;font-size:.7rem;}
+.module-actions button:hover{background:rgba(255,255,255,.18);color:#fff;}
+.empty-modules{color:#7e93b8;font-size:.8rem;padding:10px;font-style:italic;}
+
+#main-content{margin-left:264px;flex:1;padding:28px 32px 80px;max-width:1500px;width:100%;}
+
+/* ---------- HOME ---------- */
+.home-hero{margin-bottom:28px;}
+.home-hero h1{font-size:1.9rem;margin:0 0 6px;color:var(--navy-900);font-weight:800;}
+.home-hero p{color:var(--gray-600);margin:0;font-size:.98rem;}
+.stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:14px;margin:22px 0 30px;}
+.stat-card{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);padding:16px;border:1px solid var(--gray-200);}
+.stat-card .num{font-size:1.6rem;font-weight:800;color:var(--navy-900);}
+.stat-card .lbl{font-size:.78rem;color:var(--gray-600);font-weight:600;text-transform:uppercase;letter-spacing:.4px;}
+.quick-actions{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:16px;margin-bottom:34px;}
+.qa-btn{
+  background:#fff;border:1px solid var(--gray-200);border-radius:var(--radius);padding:22px 16px;cursor:pointer;
+  display:flex;flex-direction:column;align-items:center;gap:10px;box-shadow:var(--shadow);transition:.15s;text-align:center;
+}
+.qa-btn:hover{transform:translateY(-3px);box-shadow:var(--shadow-lg);border-color:var(--blue-accent);}
+.qa-btn .ic{width:50px;height:50px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:#fff;}
+.qa-btn span{font-weight:700;font-size:.88rem;color:var(--navy-900);}
+.section-title{font-size:1.15rem;font-weight:800;color:var(--navy-900);margin:0 0 14px;display:flex;align-items:center;gap:8px;}
+
+/* ---------- STREAM / CARDS ---------- */
+.stream-header{margin-bottom:20px;}
+.stream-title-wrap{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:14px;}
+.stream-title-wrap h2{margin:0;font-size:1.4rem;color:var(--navy-900);font-weight:800;}
+.stream-title-wrap .crumb{font-size:.82rem;color:var(--gray-400);font-weight:600;}
+.stream-sub-actions{display:flex;gap:8px;}
+.btn-small{
+  background:var(--gray-100);border:1px solid var(--gray-200);color:var(--gray-700);border-radius:8px;
+  padding:7px 12px;font-size:.78rem;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;transition:.12s;
+}
+.btn-small:hover{background:var(--gray-200);}
+.btn-small.danger:hover{background:#fee2e2;color:#b91c1c;border-color:#fecaca;}
+.btn-small.primary{background:var(--blue-accent);color:#fff;border-color:var(--blue-accent);}
+.btn-small.primary:hover{background:var(--blue-accent-dark);}
+.stream-controls{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;background:#fff;padding:10px 14px;border-radius:12px;border:1px solid var(--gray-200);}
+.filter-chips{display:flex;gap:6px;flex-wrap:wrap;}
+.chip-filter{
+  background:var(--gray-100);border:1px solid transparent;color:var(--gray-600);padding:6px 11px;border-radius:999px;
+  font-size:.76rem;font-weight:700;cursor:pointer;transition:.12s;
+}
+.chip-filter:hover{background:var(--gray-200);}
+.chip-filter.active{background:var(--navy-900);color:#fff;}
+.view-controls{display:flex;align-items:center;gap:10px;}
+.view-controls select{padding:6px 10px;border-radius:8px;border:1px solid var(--gray-200);font-size:.78rem;font-weight:600;background:#fff;}
+.view-toggle{display:flex;border:1px solid var(--gray-200);border-radius:8px;overflow:hidden;}
+.view-toggle button{background:#fff;border:none;padding:7px 11px;cursor:pointer;color:var(--gray-500);}
+.view-toggle button.active{background:var(--blue-accent);color:#fff;}
+
+.stream-body{margin-top:18px;}
+.stream-grid{display:grid;gap:18px;}
+.stream-grid.size-compact{grid-template-columns:repeat(auto-fill,minmax(220px,1fr));}
+.stream-grid.size-medium{grid-template-columns:repeat(auto-fill,minmax(280px,1fr));}
+.stream-grid.size-large{grid-template-columns:repeat(auto-fill,minmax(360px,1fr));}
+
+.stream-card{
+  background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);padding:16px;border:1px solid var(--gray-200);
+  display:flex;flex-direction:column;gap:10px;position:relative;cursor:pointer;transition:.15s;
+}
+.stream-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-lg);border-color:#c9dcfb;}
+.pinned-ribbon{
+  position:absolute;top:-9px;right:12px;background:var(--gold);color:#fff;font-size:.65rem;font-weight:800;
+  padding:3px 9px;border-radius:999px;display:flex;align-items:center;gap:4px;box-shadow:0 3px 8px rgba(245,158,11,.4);
+}
+.card-top{display:flex;gap:12px;align-items:flex-start;}
+.card-icon{width:46px;height:46px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0;}
+.card-icon.img{padding:8px;background:var(--gray-100);}
+.card-icon.img img{width:100%;height:100%;object-fit:contain;}
+.card-thumb{width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:10px;background:var(--gray-100);}
+.card-titlewrap{flex:1;min-width:0;}
+.card-title{margin:0 0 4px;font-size:.98rem;font-weight:700;color:var(--navy-900);line-height:1.3;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.card-module{font-size:.72rem;color:var(--blue-accent-dark);font-weight:700;display:flex;align-items:center;gap:4px;}
+.card-body{flex:1;}
+.card-desc{margin:0;font-size:.82rem;color:var(--gray-600);line-height:1.5;
+  display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;}
+.tag-row{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px;}
+.tag{background:var(--blue-soft);color:var(--blue-accent-dark);font-size:.68rem;font-weight:700;padding:2px 8px;border-radius:999px;}
+.badge{background:var(--gray-100);color:var(--gray-700);font-size:.7rem;font-weight:700;padding:3px 9px;border-radius:999px;display:inline-block;}
+.card-footer{display:flex;align-items:center;justify-content:space-between;border-top:1px solid var(--gray-100);padding-top:10px;}
+.card-date{font-size:.7rem;color:var(--gray-400);font-weight:600;}
+.card-actions{display:flex;gap:2px;}
+.icon-btn{background:transparent;border:none;color:var(--gray-400);width:28px;height:28px;border-radius:7px;cursor:pointer;font-size:.8rem;transition:.12s;}
+.icon-btn:hover{background:var(--gray-100);color:var(--navy-900);}
+.icon-btn.danger:hover{background:#fee2e2;color:#dc2626;}
+.icon-btn.pin-btn.active{color:var(--gold);}
+.icon-btn.pin-btn:hover{color:var(--gold);}
+
+.stream-list{display:flex;flex-direction:column;gap:10px;}
+.stream-row{
+  display:flex;align-items:center;gap:14px;background:#fff;border:1px solid var(--gray-200);border-radius:12px;
+  padding:10px 14px;box-shadow:var(--shadow);cursor:pointer;transition:.12s;
+}
+.stream-row:hover{border-color:#c9dcfb;transform:translateX(2px);}
+.stream-row .row-icon{width:38px;height:38px;border-radius:10px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:.95rem;}
+.stream-row .row-icon img{width:60%;height:60%;object-fit:contain;}
+.stream-row .row-thumb{width:64px;height:40px;object-fit:cover;border-radius:7px;flex-shrink:0;}
+.row-main{flex:1;min-width:0;}
+.row-title{font-weight:700;font-size:.88rem;color:var(--navy-900);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.row-meta{font-size:.72rem;color:var(--gray-400);display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+.row-pin{color:var(--gold);}
+
+.empty-state{text-align:center;padding:60px 20px;color:var(--gray-400);}
+.empty-state i{font-size:2.6rem;margin-bottom:14px;color:var(--gray-300);}
+.empty-state h3{color:var(--gray-600);margin:0 0 6px;}
+
+/* ---------- OFFICIAL / SEARCH ---------- */
+.official-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px;}
+.official-card{background:#fff;border:1px solid var(--gray-200);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px;display:flex;flex-direction:column;gap:10px;}
+.official-top{display:flex;align-items:center;gap:12px;}
+.official-top img{width:36px;height:36px;border-radius:9px;background:var(--gray-100);padding:5px;}
+.official-top .t{flex:1;font-weight:700;font-size:.92rem;color:var(--navy-900);}
+.pin-toggle{display:flex;align-items:center;gap:6px;font-size:.74rem;color:var(--gray-500);font-weight:600;}
+
+.search-results{display:flex;flex-direction:column;gap:22px;}
+.search-group h3{font-size:.95rem;color:var(--navy-900);margin:0 0 10px;display:flex;align-items:center;gap:8px;}
+.search-big-input{width:100%;padding:14px 18px 14px 44px;border-radius:14px;border:1px solid var(--gray-200);font-size:1rem;position:relative;}
+.search-wrap{position:relative;margin-bottom:24px;}
+.search-wrap i{position:absolute;left:16px;top:50%;transform:translateY(-50%);color:var(--gray-400);}
+
+/* ---------- FAB ---------- */
+.fab{
+  position:fixed;bottom:26px;right:26px;width:58px;height:58px;border-radius:50%;background:var(--blue-accent);
+  color:#fff;border:none;box-shadow:0 10px 25px rgba(59,130,246,.45);display:flex;align-items:center;justify-content:center;
+  font-size:1.3rem;cursor:pointer;z-index:170;transition:.2s;
+}
+.fab:hover{background:var(--blue-accent-dark);transform:scale(1.05);}
+.fab.open{transform:rotate(45deg);}
+.fab-menu{position:fixed;bottom:96px;right:26px;display:flex;flex-direction:column;gap:10px;z-index:170;align-items:flex-end;}
+.fab-menu-item{display:flex;align-items:center;gap:10px;}
+.fab-menu-item .lbl{background:var(--navy-900);color:#fff;font-size:.78rem;font-weight:700;padding:6px 12px;border-radius:8px;white-space:nowrap;box-shadow:var(--shadow);}
+.fab-menu-item button{width:44px;height:44px;border-radius:50%;border:none;color:#fff;font-size:1rem;cursor:pointer;box-shadow:0 6px 16px rgba(0,0,0,.18);transition:.15s;}
+.fab-menu-item button:hover{transform:scale(1.08);}
+
+/* ---------- MODAL ---------- */
+.modal-overlay{
+  position:fixed;inset:0;background:rgba(7,22,44,.55);backdrop-filter:blur(2px);display:flex;align-items:center;justify-content:center;
+  z-index:300;padding:20px;
+}
+.modal-box{
+  background:#fff;border-radius:18px;max-width:580px;width:100%;max-height:90vh;overflow-y:auto;padding:26px 26px 22px;
+  box-shadow:var(--shadow-lg);animation:popIn .18s ease;
+}
+@keyframes popIn{from{transform:scale(.95);opacity:0;}to{transform:scale(1);opacity:1;}}
+.modal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;}
+.modal-head h3{margin:0;font-size:1.2rem;color:var(--navy-900);font-weight:800;}
+.modal-close{background:var(--gray-100);border:none;width:32px;height:32px;border-radius:9px;cursor:pointer;color:var(--gray-600);font-size:.9rem;}
+.modal-close:hover{background:var(--gray-200);}
+.form-group{margin-bottom:15px;}
+.form-row{display:flex;gap:12px;}
+.form-row .form-group{flex:1;}
+label{display:block;margin-bottom:6px;font-weight:700;font-size:.8rem;color:var(--gray-600);}
+input[type=text],input[type=url],input[type=search],input[type=file],select,textarea{
+  width:100%;padding:10px 13px;border-radius:9px;border:1px solid var(--gray-200);font-size:.88rem;font-family:inherit;
+  background:#fff;color:var(--gray-800);transition:.12s;
+}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--blue-accent);box-shadow:0 0 0 3px var(--blue-soft);}
+textarea{resize:vertical;min-height:90px;}
+.hint{font-size:.72rem;color:var(--gray-400);margin-top:4px;}
+.warn-box{background:#fef3c7;border:1px solid #fde68a;color:#92400e;padding:10px 12px;border-radius:9px;font-size:.78rem;margin-top:8px;display:flex;gap:8px;align-items:flex-start;}
+.preview-row{display:flex;align-items:center;gap:12px;margin-top:10px;}
+.preview-row img{width:48px;height:48px;border-radius:8px;object-fit:contain;background:var(--gray-100);padding:4px;}
+.preview-row .yt-thumb{width:120px;height:68px;object-fit:cover;border-radius:8px;}
+.modal-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:20px;}
+.btn-primary{background:var(--blue-accent);color:#fff;border:none;border-radius:9px;padding:10px 20px;font-weight:700;font-size:.86rem;cursor:pointer;transition:.12s;}
+.btn-primary:hover{background:var(--blue-accent-dark);}
+.btn-secondary{background:var(--gray-100);color:var(--gray-700);border:none;border-radius:9px;padding:10px 20px;font-weight:700;font-size:.86rem;cursor:pointer;}
+.btn-secondary:hover{background:var(--gray-200);}
+
+.switch{position:relative;display:inline-block;width:40px;height:22px;flex-shrink:0;}
+.switch input{opacity:0;width:0;height:0;}
+.slider-switch{position:absolute;cursor:pointer;inset:0;background:var(--gray-300);transition:.2s;border-radius:999px;}
+.slider-switch:before{content:"";position:absolute;width:16px;height:16px;left:3px;top:3px;background:#fff;transition:.2s;border-radius:50%;}
+.switch input:checked + .slider-switch{background:var(--blue-accent);}
+.switch input:checked + .slider-switch:before{transform:translateX(18px);}
+.switch-row{display:flex;align-items:center;gap:10px;}
+.switch-row span{font-size:.85rem;font-weight:600;color:var(--gray-700);}
+
+.toggle-group{display:flex;border:1px solid var(--gray-200);border-radius:9px;overflow:hidden;width:fit-content;margin-bottom:10px;}
+.toggle-group button{background:#fff;border:none;padding:7px 14px;font-size:.78rem;font-weight:700;cursor:pointer;color:var(--gray-500);}
+.toggle-group button.active{background:var(--navy-900);color:#fff;}
+
+.editor-toolbar{display:flex;gap:4px;background:var(--gray-100);border:1px solid var(--gray-200);border-bottom:none;border-radius:9px 9px 0 0;padding:6px;flex-wrap:wrap;}
+.editor-toolbar button{width:30px;height:30px;border:none;background:#fff;border-radius:6px;cursor:pointer;color:var(--gray-700);font-size:.8rem;}
+.editor-toolbar button:hover{background:var(--blue-light);}
+.rich-editor{border:1px solid var(--gray-200);border-radius:0 0 9px 9px;padding:12px;min-height:140px;font-size:.88rem;line-height:1.6;}
+.rich-editor:focus{outline:none;box-shadow:0 0 0 3px var(--blue-soft);}
+
+.icon-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin-top:8px;}
+.icon-pick{background:var(--gray-100);border:2px solid transparent;border-radius:9px;height:38px;cursor:pointer;color:var(--gray-600);}
+.icon-pick.active{border-color:var(--blue-accent);background:var(--blue-soft);color:var(--blue-accent-dark);}
+
+/* ---------- TOASTS ---------- */
+#toastContainer{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:400;display:flex;flex-direction:column;gap:8px;align-items:center;}
+.toast{
+  background:var(--navy-900);color:#fff;padding:11px 20px;border-radius:999px;font-size:.84rem;font-weight:600;
+  box-shadow:var(--shadow-lg);display:flex;align-items:center;gap:8px;animation:toastIn .2s ease;
+}
+.toast.success i{color:#4ade80;}
+.toast.error i{color:#f87171;}
+@keyframes toastIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+
+/* ---------- RESPONSIVE ---------- */
+@media (max-width:900px){
+  .hamburger-btn{display:flex;}
+  .topbar-search{display:none;}
+  #sidebar{transform:translateX(-100%);}
+  #sidebar.open{transform:translateX(0);box-shadow:var(--shadow-lg);}
+  #main-content{margin-left:0;padding:18px;}
+  .pinned-chips{max-width:150px;}
+  .logo span.sub{display:none;}
+}
+@media (max-width:560px){
+  .stats-row{grid-template-columns:repeat(2,1fr);}
+  .quick-actions{grid-template-columns:repeat(2,1fr);}
+  .stream-grid.size-medium, .stream-grid.size-large{grid-template-columns:1fr;}
+  .modal-box{padding:18px;}
+}
+</style>
+</head>
+<body>
+
+<header id="topbar">
+  <button class="hamburger-btn" id="hamburgerBtn"><i class="fa-solid fa-bars"></i></button>
+  <div class="logo" data-nav="home"><span class="emoji">🎓</span><div>iSkills Hub<span class="sub">iSkills Next Command Center</span></div></div>
+  <div class="topbar-search">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <input type="search" id="topSearchInput" placeholder="Search chats, videos, tools, notes, files...">
+  </div>
+  <div class="pinned-chips" id="pinnedChips"></div>
+  <div class="topbar-right">
+    <button class="btn-add-top" id="topAddBtn"><i class="fa-solid fa-plus"></i> <span>Add</span></button>
+  </div>
+</header>
+
+<div id="sidebarBackdrop"></div>
+<div class="layout">
+  <aside id="sidebar"></aside>
+  <main id="main-content"></main>
+</div>
+
+<button class="fab" id="fabBtn"><i class="fa-solid fa-plus"></i></button>
+<div class="fab-menu hidden" id="fabMenu"></div>
+
+<div class="modal-overlay hidden" id="modalOverlay">
+  <div class="modal-box" id="modalBox"></div>
+</div>
+
+<div id="toastContainer"></div>
+
+<script>
+/* ===================== CONSTANTS & UTILS ===================== */
+const PREFIX='iskillshub_';
+const K={modules:'modules',chats:'chats',videos:'videos',tools:'tools',notes:'notes',files:'files',official:'official',settings:'settings',seeded:'seeded'};
+
+function uid(){return (crypto.randomUUID? crypto.randomUUID() : 'id-'+Date.now()+'-'+Math.random().toString(16).slice(2));}
+function load(key,fallback){try{const raw=localStorage.getItem(PREFIX+key);return raw!==null? JSON.parse(raw):fallback;}catch(e){return fallback;}}
+function save(key,val){localStorage.setItem(PREFIX+key,JSON.stringify(val));}
+function esc(str){if(str===undefined||str===null)return'';return String(str).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function formatDate(ts){if(!ts)return'';const d=new Date(ts);return d.toLocaleDateString(undefined,{month:'short',day:'numeric',year:'numeric'});}
+function debounce(fn,ms){let t;return(...a)=>{clearTimeout(t);t=setTimeout(()=>fn(...a),ms);};}
+
+function entityStore(key){
+  return{
+    all:()=>load(key,[]),
+    save:(arr)=>save(key,arr),
+    add:(obj)=>{const arr=load(key,[]);arr.unshift(obj);save(key,arr);return obj;},
+    update:(id,patch)=>{const arr=load(key,[]);const idx=arr.findIndex(x=>x.id===id);if(idx>-1){arr[idx]=Object.assign({},arr[idx],patch);save(key,arr);}},
+    remove:(id)=>{let arr=load(key,[]);arr=arr.filter(x=>x.id!==id);save(key,arr);},
+    get:(id)=>load(key,[]).find(x=>x.id===id)
+  };
+}
+const Modules=entityStore(K.modules), Chats=entityStore(K.chats), Videos=entityStore(K.videos),
+      Tools=entityStore(K.tools), Notes=entityStore(K.notes), Files=entityStore(K.files), Official=entityStore(K.official);
+
+function getSettings(){return load(K.settings,{viewMode:'cards',cardSize:'medium'});}
+function setSettings(s){save(K.settings,s);}
+
+/* ===================== SEED DATA ===================== */
+function seedIfNeeded(){
+  if(load(K.seeded,false))return;
+  const mk=(name,parentId=null)=>({id:uid(),name,parentId,createdAt:Date.now()});
+  const seo=mk('SEO');
+  const sub=[mk('Niche Research',seo.id),mk('Keyword Research',seo.id),mk('On-Page SEO',seo.id),mk('Link Building',seo.id)];
+  const etsy=mk('Etsy');
+  const ai=mk('AI Agents');
+  const web=mk('Web Coding');
+  const gen=mk('General');
+  save(K.modules,[seo,...sub,etsy,ai,web,gen]);
+  save(K.chats,[]);save(K.videos,[]);save(K.tools,[]);save(K.notes,[]);save(K.files,[]);
+  save(K.official,[
+    {id:uid(),title:'iSkills Next Portal',link:'https://iskillsnext.com',pinned:true,createdAt:Date.now()},
+    {id:uid(),title:'iSkills Facebook Group',link:'https://facebook.com',pinned:true,createdAt:Date.now()}
+  ]);
+  save(K.settings,{viewMode:'cards',cardSize:'medium'});
+  save(K.seeded,true);
+}
+
+/* ===================== MODULE HELPERS ===================== */
+function moduleExists(id){return Modules.all().some(m=>m.id===id);}
+function getModuleById(id){return Modules.get(id);}
+function getModuleName(id){if(!id)return'Uncategorized';const m=getModuleById(id);return m? m.name:'Uncategorized';}
+function getChildren(id){return Modules.all().filter(m=>m.parentId===id);}
+function getDescendantIds(id){let ids=[id];getChildren(id).forEach(c=>{ids=ids.concat(getDescendantIds(c.id));});return ids;}
+function getModulePath(id){const path=[];let cur=getModuleById(id);while(cur){path.unshift(cur.name);cur=cur.parentId? getModuleById(cur.parentId):null;}return path;}
+function flattenModules(excludeIds=[]){
+  const all=Modules.all();const result=[];
+  function walk(parentId,depth){
+    all.filter(m=>m.parentId===parentId).forEach(m=>{
+      if(excludeIds.includes(m.id))return;
+      result.push({id:m.id,label:(depth>0?'— '.repeat(depth):'')+m.name,depth});
+      walk(m.id,depth+1);
+    });
+  }
+  walk(null,0);
+  return result;
+}
+function buildModuleOptions(selectedId,excludeIds=[]){
+  const flat=flattenModules(excludeIds);
+  if(flat.length===0)return '<option value="">No modules yet</option>';
+  return flat.map(m=>`<option value="${m.id}" ${m.id===selectedId?'selected':''}>${esc(m.label)}</option>`).join('');
+}
+
+/* ===================== PLATFORM / FAVICON / YOUTUBE ===================== */
+const PLATFORMS={
+  chatgpt:{name:'ChatGPT',icon:'fa-solid fa-comment-dots',color:'#10a37f',match:['chatgpt.com','chat.openai.com','openai.com']},
+  claude:{name:'Claude',icon:'fa-solid fa-feather-pointed',color:'#d97757',match:['claude.ai']},
+  gemini:{name:'Gemini',icon:'fa-solid fa-star',color:'#4285f4',match:['gemini.google.com']},
+  groq:{name:'Groq',icon:'fa-solid fa-bolt',color:'#f55036',match:['groq.com']},
+  perplexity:{name:'Perplexity',icon:'fa-solid fa-circle-nodes',color:'#20808d',match:['perplexity.ai']},
+  poe:{name:'Poe',icon:'fa-solid fa-dove',color:'#5d5fef',match:['poe.com']},
+  copilot:{name:'Copilot',icon:'fa-solid fa-wand-magic-sparkles',color:'#0ea5e9',match:['copilot.microsoft.com','bing.com']},
+  mistral:{name:'Mistral',icon:'fa-solid fa-wind',color:'#fa6b00',match:['mistral.ai']},
+  deepseek:{name:'DeepSeek',icon:'fa-solid fa-magnifying-glass',color:'#4d6bfe',match:['deepseek.com']},
+  other:{name:'Other / Generic',icon:'fa-solid fa-comments',color:'#64748b',match:[]}
+};
+function detectPlatformKey(url){
+  try{const u=(url||'').toLowerCase();for(const key in PLATFORMS){if(key==='other')continue;if(PLATFORMS[key].match.some(m=>u.includes(m)))return key;}}catch(e){}
+  return 'other';
+}
+function faviconUrl(link){try{const domain=new URL(link).hostname;return `https://www.google.com/s2/favicons?domain=${domain}&sz=128`;}catch(e){return '';}}
+function extractYoutubeId(url){
+  const m=(url||'').match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/|v\/))([\w-]{11})/);
+  return m? m[1]:null;
+}
+async function fetchYoutubeInfo(url){
+  try{
+    const res=await fetch(`https://www.youtube.com/oembed?url=${encodeURIComponent(url)}&format=json`);
+    if(!res.ok)throw new Error('oembed failed');
+    const data=await res.json();
+    return{title:data.title||'',channel:data.author_name||'',thumbnail:data.thumbnail_url||''};
+  }catch(e){
+    const id=extractYoutubeId(url);
+    if(id)return{title:'',channel:'',thumbnail:`https://img.youtube.com/vi/${id}/hqdefault.jpg`};
+    return null;
+  }
+}
+const TOOL_ICONS=['fa-solid fa-wrench','fa-solid fa-table','fa-solid fa-file-lines','fa-solid fa-globe','fa-solid fa-layer-group','fa-solid fa-toolbox','fa-solid fa-link','fa-solid fa-cube','fa-solid fa-gear','fa-solid fa-chart-line','fa-solid fa-palette','fa-solid fa-database'];
+
+/* ===================== MARKDOWN ===================== */
+function mdToHtml(md){
+  if(!md)return'';
+  let html=esc(md);
+  html=html.replace(/^### (.*)$/gim,'<h3>$1</h3>')
+           .replace(/^## (.*)$/gim,'<h2>$1</h2>')
+           .replace(/^# (.*)$/gim,'<h1>$1</h1>')
+           .replace(/\*\*(.*?)\*\*/gim,'<strong>$1</strong>')
+           .replace(/\*(.*?)\*/gim,'<em>$1</em>')
+           .replace(/\[(.*?)\]\((.*?)\)/gim,'<a href="$2" target="_blank" rel="noopener">$1</a>')
+           .replace(/^- (.*)$/gim,'<li>$1</li>');
+  html=html.replace(/(<li>[\s\S]*?<\/li>)(\n)?/gim,m=>m);
+  html=html.replace(/((?:<li>.*?<\/li>\s*)+)/gim,m=>`<ul>${m}</ul>`);
+  html=html.split(/\n{2,}/).map(block=>{
+    if(/^<h[1-3]>|^<ul>/.test(block.trim()))return block;
+    return `<p>${block.replace(/\n/g,'<br>')}</p>`;
+  }).join('');
+  return html;
+}
+function stripHtml(html){const d=document.createElement('div');d.innerHTML=html||'';return d.textContent||'';}
+
+/* ===================== STATE ===================== */
+let state={view:'home',moduleId:null,query:'',typeFilter:'all'};
+let settings=getSettings();
+let collapsedModules=new Set();
+
+/* ===================== TOAST ===================== */
+function showToast(msg,type='success'){
+  const c=document.getElementById('toastContainer');
+  const t=document.createElement('div');
+  t.className='toast '+type;
+  t.innerHTML=`<i class="fa-solid ${type==='success'?'fa-circle-check':'fa-circle-exclamation'}"></i> ${esc(msg)}`;
+  c.appendChild(t);
+  setTimeout(()=>{t.style.opacity='0';t.style.transition='.3s';setTimeout(()=>t.remove(),300);},2600);
+}
+
+/* ===================== MODAL ===================== */
+function openModal(html){
+  document.getElementById('modalBox').innerHTML=html;
+  document.getElementById('modalOverlay').classList.remove('hidden');
+}
+function closeModal(){
+  document.getElementById('modalOverlay').classList.add('hidden');
+  document.getElementById('modalBox').innerHTML='';
+}
+document.getElementById('modalOverlay').addEventListener('click',e=>{if(e.target.id==='modalOverlay')closeModal();});
+
+/* ===================== RENDER ROOT ===================== */
+function render(){renderTopbar();renderSidebar();renderMain();}
+
+/* ---------- TOPBAR ---------- */
+function renderTopbar(){
+  const pinned=Official.all().filter(o=>o.pinned);
+  const box=document.getElementById('pinnedChips');
+  if(pinned.length===0){
+    box.innerHTML='<span class="chip-empty">No pinned links yet</span>';
+  }else{
+    box.innerHTML=pinned.map(o=>`<div class="chip" data-action="open-link" data-url="${esc(o.link)}" title="${esc(o.link)}"><img src="${faviconUrl(o.link)}" onerror="this.style.display='none'"><span>${esc(o.title)}</span></div>`).join('');
+  }
+}
+
+/* ---------- SIDEBAR ---------- */
+function renderSidebar(){
+  const modules=Modules.all();
+  const topLevel=modules.filter(m=>!m.parentId || !moduleExists(m.parentId));
+  let html='';
+  html+=`<div class="nav-item ${state.view==='home'?'active':''}" data-nav="home"><i class="fa-solid fa-house"></i> Home</div>`;
+  html+=`<div class="nav-item ${state.view==='search'?'active':''}" data-nav="search"><i class="fa-solid fa-magnifying-glass"></i> Global Search</div>`;
+  html+=`<div class="nav-item ${state.view==='official'?'active':''}" data-nav="official"><i class="fa-solid fa-building-columns"></i> Official Pages</div>`;
+  html+=`<div class="nav-section-label"><span>Modules</span><button data-action="add-module" title="Add module"><i class="fa-solid fa-plus"></i></button></div>`;
+  if(topLevel.length===0){
+    html+=`<div class="empty-modules">No modules yet. Click + to add one.</div>`;
+  }else{
+    html+=renderModuleTree(null,0,modules);
+  }
+  html+=`<div class="nav-item ${state.view==='module' && state.moduleId==='__none__'?'active':''}" data-nav="__none__" style="margin-top:14px;"><i class="fa-solid fa-box-archive"></i> Uncategorized</div>`;
+  document.getElementById('sidebar').innerHTML=html;
+}
+function renderModuleTree(parentId,depth,modules){
+  const children=modules.filter(m=>m.parentId===parentId);
+  if(children.length===0)return'';
+  let html='<ul class="module-tree">';
+  children.forEach(m=>{
+    const hasKids=modules.some(x=>x.parentId===m.id);
+    const collapsed=collapsedModules.has(m.id);
+    const active=state.view==='module' && state.moduleId===m.id;
+    html+=`<li class="module-item">
+      <div class="module-row ${active?'active':''}" style="padding-left:${depth*14}px">
+        <span class="chevron" data-toggle="${m.id}">${hasKids?(collapsed?'<i class="fa-solid fa-caret-right"></i>':'<i class="fa-solid fa-caret-down"></i>'):''}</span>
+        <span class="module-name" data-nav="${m.id}"><i class="fa-solid ${depth===0?'fa-layer-group':'fa-folder'} mod-icon"></i>${esc(m.name)}</span>
+        <span class="module-actions">
+          <button data-action="add-sub" data-id="${m.id}" title="Add submodule"><i class="fa-solid fa-plus"></i></button>
+          <button data-action="edit-module" data-id="${m.id}" title="Edit"><i class="fa-solid fa-pen"></i></button>
+          <button data-action="delete-module" data-id="${m.id}" title="Delete"><i class="fa-solid fa-trash"></i></button>
+        </span>
+      </div>
+      ${hasKids && !collapsed ? renderModuleTree(m.id,depth+1,modules):''}
+    </li>`;
+  });
+  html+='</ul>';
+  return html;
+}
+
+/* ---------- MAIN ROUTER ---------- */
+function renderMain(){
+  const main=document.getElementById('main-content');
+  if(state.view==='home')main.innerHTML=renderHome();
+  else if(state.view==='search')main.innerHTML=renderSearchView();
+  else if(state.view==='official')main.innerHTML=renderOfficialView();
+  else if(state.view==='module')main.innerHTML=renderModuleView(state.moduleId);
+  else main.innerHTML=renderHome();
+  attachMainExtras();
+}
+function attachMainExtras(){
+  const si=document.getElementById('searchViewInput');
+  if(si){si.addEventListener('input',debounce(e=>{state.query=e.target.value;renderMain();},150));si.focus();si.setSelectionRange(si.value.length,si.value.length);}
+  const sizeSel=document.getElementById('sizeSelect');
+  if(sizeSel){sizeSel.addEventListener('change',e=>{settings.cardSize=e.target.value;setSettings(settings);renderMain();});}
+}
+
+/* ---------- HOME ---------- */
+function renderHome(){
+  const counts={chat:Chats.all().length,video:Videos.all().length,tool:Tools.all().length,note:Notes.all().length,file:Files.all().length,module:Modules.all().length};
+  const quick=[
+    {type:'chat',label:'Add Chat',icon:'fa-solid fa-comments',color:'#2563eb'},
+    {type:'video',label:'Add Video',icon:'fa-solid fa-video',color:'#dc2626'},
+    {type:'tool',label:'Add Tool',icon:'fa-solid fa-wrench',color:'#059669'},
+    {type:'note',label:'Add Note',icon:'fa-solid fa-note-sticky',color:'#d97706'},
+    {type:'file',label:'Add File',icon:'fa-solid fa-file-arrow-up',color:'#7c3aed'}
+  ];
+  const all=getAllEntries().sort((a,b)=>b.createdAt-a.createdAt).slice(0,8);
+  return `
+  <div class="home-hero">
+    <h1>Welcome to iSkills Hub 👋</h1>
+    <p>Your command center for every chat, video, tool, note and file in the iSkills Next course.</p>
+  </div>
+  <div class="stats-row">
+    <div class="stat-card"><div class="num">${counts.module}</div><div class="lbl">Modules</div></div>
+    <div class="stat-card"><div class="num">${counts.chat}</div><div class="lbl">AI Chats</div></div>
+    <div class="stat-card"><div class="num">${counts.video}</div><div class="lbl">Videos</div></div>
+    <div class="stat-card"><div class="num">${counts.tool}</div><div class="lbl">Tools</div></div>
+    <div class="stat-card"><div class="num">${counts.note}</div><div class="lbl">Notes</div></div>
+    <div class="stat-card"><div class="num">${counts.file}</div><div class="lbl">Files</div></div>
+  </div>
+  <h2 class="section-title"><i class="fa-solid fa-bolt"></i> Quick Actions</h2>
+  <div class="quick-actions">
+    ${quick.map(q=>`<button class="qa-btn" data-action="quick-add" data-type="${q.type}"><div class="ic" style="background:${q.color}">${`<i class="${q.icon}"></i>`}</div><span>${q.label}</span></button>`).join('')}
+  </div>
+  <h2 class="section-title"><i class="fa-solid fa-clock-rotate-left"></i> Recently Added</h2>
+  ${all.length? `<div class="stream-grid size-medium">${all.map(cardHTML).join('')}</div>` : emptyState('fa-inbox','Nothing added yet','Use Quick Actions above to add your first item.')}
+  `;
+}
+function getAllEntries(){
+  const mk=(arr,type)=>arr.map(raw=>({type,raw,id:raw.id,createdAt:raw.createdAt||0,pinned:!!raw.pinned}));
+  return [].concat(mk(Chats.all(),'chat'),mk(Videos.all(),'video'),mk(Tools.all(),'tool'),mk(Notes.all(),'note'),mk(Files.all(),'file'));
+}
+function emptyState(icon,title,sub){
+  return `<div class="empty-state"><i class="fa-solid ${icon}"></i><h3>${esc(title)}</h3><p>${esc(sub)}</p></div>`;
+}
+
+/* ---------- MODULE STREAM VIEW ---------- */
+function buildStreamItems(moduleId){
+  let filterFn;
+  if(moduleId==='__none__'){filterFn=(mid)=>!mid || !moduleExists(mid);}
+  else{const idsSet=new Set(getDescendantIds(moduleId));filterFn=(mid)=>idsSet.has(mid);}
+  const entries=getAllEntries().filter(e=>filterFn(e.raw.moduleId));
+  entries.sort((a,b)=>{
+    const ap=a.type==='chat'&&a.raw.pinned?1:0, bp=b.type==='chat'&&b.raw.pinned?1:0;
+    if(ap!==bp)return bp-ap;
+    return b.createdAt-a.createdAt;
+  });
+  return entries;
+}
+function renderModuleView(moduleId){
+  const isVirtual=moduleId==='__none__';
+  const mod=isVirtual?null:getModuleById(moduleId);
+  if(!isVirtual && !mod){state.view='home';return renderHome();}
+  const title=isVirtual?'Uncategorized Items':mod.name;
+  const crumb=isVirtual?'':getModulePath(moduleId).join(' / ');
+  let items=buildStreamItems(moduleId);
+  const counts={all:items.length,chat:0,video:0,tool:0,note:0,file:0};
+  items.forEach(i=>counts[i.type]++);
+  if(state.typeFilter!=='all')items=items.filter(i=>i.type===state.typeFilter);
+
+  const filterLabels={all:'All',chat:'Chats',video:'Videos',tool:'Tools',note:'Notes',file:'Files'};
+  const chips=['all','chat','video','tool','note','file'].map(f=>`<button class="chip-filter ${state.typeFilter===f?'active':''}" data-filter="${f}">${filterLabels[f]} (${counts[f]})</button>`).join('');
+
+  const moduleActions=isVirtual?'':`
+    <div class="stream-sub-actions">
+      <button class="btn-small" data-action="add-sub" data-id="${moduleId}"><i class="fa-solid fa-plus"></i> Submodule</button>
+      <button class="btn-small" data-action="edit-module" data-id="${moduleId}"><i class="fa-solid fa-pen"></i> Edit</button>
+      <button class="btn-small danger" data-action="delete-module" data-id="${moduleId}"><i class="fa-solid fa-trash"></i> Delete</button>
+    </div>`;
+
+  return `
+  <div class="stream-header">
+    <div class="stream-title-wrap">
+      <div><h2>${esc(title)}</h2>${crumb?`<div class="crumb">${esc(crumb)}</div>`:''}</div>
+      ${moduleActions}
+    </div>
+    <div class="stream-controls">
+      <div class="filter-chips">${chips}</div>
+      <div class="view-controls">
+        <select id="sizeSelect">
+          <option value="compact" ${settings.cardSize==='compact'?'selected':''}>Compact</option>
+          <option value="medium" ${settings.cardSize==='medium'?'selected':''}>Medium</option>
+          <option value="large" ${settings.cardSize==='large'?'selected':''}>Large</option>
+        </select>
+        <div class="view-toggle">
+          <button class="${settings.viewMode==='cards'?'active':''}" data-viewmode="cards" title="Cards view"><i class="fa-solid fa-grip"></i></button>
+          <button class="${settings.viewMode==='list'?'active':''}" data-viewmode="list" title="List view"><i class="fa-solid fa-list"></i></button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="stream-body">
+    ${items.length===0? emptyState('fa-layer-group','No items here yet','Add a chat, video, tool, note or file to this module.') :
+      (settings.viewMode==='cards'? `<div class="stream-grid size-${settings.cardSize}">${items.map(cardHTML).join('')}</div>` : `<div class="stream-list">${items.map(rowHTML).join('')}</div>`)}
+  </div>`;
+}
+
+/* ---------- CARD / ROW RENDERERS ---------- */
+function cardHTML(entry){
+  const{type,raw}=entry;
+  const moduleName=getModuleName(raw.moduleId);
+  const date=formatDate(raw.createdAt);
+  let mediaHtml='',bodyHtml='';
+  if(type==='chat'){
+    const p=PLATFORMS[raw.platformKey||'other'];
+    mediaHtml=`<div class="card-icon" style="background:${p.color}22;color:${p.color}"><i class="${p.icon}"></i></div>`;
+    bodyHtml=`<p class="card-desc">${esc(raw.description||'No description')}</p>${raw.tags&&raw.tags.length?`<div class="tag-row">${raw.tags.map(t=>`<span class="tag">#${esc(t)}</span>`).join('')}</div>`:''}`;
+  }else if(type==='video'){
+    mediaHtml=`<img class="card-thumb" src="${esc(raw.thumbnail||'')}" alt="" onerror="this.style.opacity='0.3'">`;
+    bodyHtml=`<p class="card-desc"><i class="fa-solid fa-user"></i> ${esc(raw.channel||'Unknown channel')}</p>`;
+  }else if(type==='tool'){
+    if(raw.useCustomIcon){mediaHtml=`<div class="card-icon" style="background:#2563eb22;color:#2563eb"><i class="${raw.customIcon||'fa-solid fa-wrench'}"></i></div>`;}
+    else{mediaHtml=`<div class="card-icon img"><img src="${esc(raw.favicon||'')}" onerror="this.parentElement.innerHTML='<i class=\\'fa-solid fa-wrench\\'></i>'"></div>`;}
+    bodyHtml=`<span class="badge">${esc(raw.typeCategory||'Tool')}</span>`;
+  }else if(type==='note'){
+    mediaHtml=`<div class="card-icon" style="background:#d9770622;color:#d97706"><i class="fa-solid fa-note-sticky"></i></div>`;
+    const plain=raw.mode==='markdown'? stripHtml(mdToHtml(raw.content)) : stripHtml(raw.content);
+    bodyHtml=`<p class="card-desc">${esc(plain).slice(0,160)}</p>`;
+  }else if(type==='file'){
+    if(raw.mode==='base64' && raw.fileType && raw.fileType.startsWith('image/')){mediaHtml=`<img class="card-thumb" src="${raw.data}" alt="">`;}
+    else{mediaHtml=`<div class="card-icon" style="background:#05966922;color:#059669"><i class="fa-solid ${raw.mode==='link'?'fa-link':'fa-file-lines'}"></i></div>`;}
+    bodyHtml=`<span class="badge">${raw.mode==='link'?'External Link':(raw.fileType||'Document')}</span>`;
+  }
+  const pinStar=type==='chat'?`<button class="icon-btn pin-btn ${raw.pinned?'active':''}" data-action="pin" data-type="chat" data-id="${raw.id}" title="Pin"><i class="fa-${raw.pinned?'solid':'regular'} fa-star"></i></button>`:'';
+  return `<div class="stream-card" data-type="${type}" data-id="${raw.id}">
+    ${type==='chat'&&raw.pinned?'<div class="pinned-ribbon"><i class="fa-solid fa-thumbtack"></i> Pinned</div>':''}
+    <div class="card-top">${mediaHtml}<div class="card-titlewrap"><h4 class="card-title">${esc(raw.title)}</h4><span class="card-module"><i class="fa-solid fa-layer-group"></i>${esc(moduleName)}</span></div></div>
+    <div class="card-body">${bodyHtml}</div>
+    <div class="card-footer">
+      <span class="card-date">${date}</span>
+      <div class="card-actions">
+        ${pinStar}
+        <button class="icon-btn" data-action="open" data-type="${type}" data-id="${raw.id}" title="Open"><i class="fa-solid fa-arrow-up-right-from-square"></i></button>
+        <button class="icon-btn" data-action="edit" data-type="${type}" data-id="${raw.id}" title="Edit"><i class="fa-solid fa-pen"></i></button>
+        <button class="icon-btn danger" data-action="delete" data-type="${type}" data-id="${raw.id}" title="Delete"><i class="fa-solid fa-trash"></i></button>
+      </div>
+    </div>
+  </div>`;
+}
+function rowHTML(entry){
+  const{type,raw}=entry;
+  const moduleName=getModuleName(raw.moduleId);
+  const date=formatDate(raw.createdAt);
+  let iconHtml='';
+  if(type==='chat'){const p=PLATFORMS[raw.platformKey||'other'];iconHtml=`<div class="row-icon" style="background:${p.color}22;color:${p.color}"><i class="${p.icon}"></i></div>`;}
+  else if(type==='video'){iconHtml=`<img class="row-thumb" src="${esc(raw.thumbnail||'')}" onerror="this.style.opacity='0.3'">`;}
+  else if(type==='tool'){iconHtml=raw.useCustomIcon?`<div class="row-icon" style="background:#2563eb22;color:#2563eb"><i class="${raw.customIcon}"></i></div>`:`<div class="row-icon" style="background:#f1f5f9"><img src="${esc(raw.favicon||'')}" onerror="this.style.display='none'"></div>`;}
+  else if(type==='note'){iconHtml=`<div class="row-icon" style="background:#d9770622;color:#d97706"><i class="fa-solid fa-note-sticky"></i></div>`;}
+  else if(type==='file'){iconHtml=`<div class="row-icon" style="background:#05966922;color:#059669"><i class="fa-solid ${raw.mode==='link'?'fa-link':'fa-file-lines'}"></i></div>`;}
+  const pinStar=type==='chat'?`<button class="icon-btn pin-btn ${raw.pinned?'active':''}" data-action="pin" data-type="chat" data-id="${raw.id}"><i class="fa-${raw.pinned?'solid':'regular'} fa-star"></i></button>`:'';
+  return `<div class="stream-row" data-type="${type}" data-id="${raw.id}">
+    ${iconHtml}
+    <div class="row-main"><div class="row-title">${type==='chat'&&raw.pinned?'<i class="fa-solid fa-thumbtack row-pin"></i> ':''}${esc(raw.title)}</div>
+      <div class="row-meta"><span><i class="fa-solid fa-layer-group"></i> ${esc(moduleName)}</span><span>${date}</span><span class="badge" style="text-transform:capitalize">${type}</span></div>
+    </div>
+    <div class="card-actions">
+      ${pinStar}
+      <button class="icon-btn" data-action="open" data-type="${type}" data-id="${raw.id}" title="Open"><i class="fa-solid fa-arrow-up-right-from-square"></i></button>
+      <button class="icon-btn" data-action="edit" data-type="${type}" data-id="${raw.id}" title="Edit"><i class="fa-solid fa-pen"></i></button>
+      <button class="icon-btn danger" data-action="delete" data-type="${type}" data-id="${raw.id}" title="Delete"><i class="fa-solid fa-trash"></i></button>
+    </div>
+  </div>`;
+}
+
+/* ---------- OFFICIAL VIEW ---------- */
+function renderOfficialView(){
+  const items=Official.all().sort((a,b)=>b.createdAt-a.createdAt);
+  return `
+  <div class="stream-header">
+    <div class="stream-title-wrap">
+      <h2><i class="fa-solid fa-building-columns"></i> Official Pages</h2>
+      <button class="btn-small primary" data-action="add-official"><i class="fa-solid fa-plus"></i> Add Official Link</button>
+    </div>
+  </div>
+  ${items.length===0? emptyState('fa-building-columns','No official pages yet','Add portal or community links and pin them to the top bar.') : `
+  <div class="official-grid">
+    ${items.map(o=>`
+      <div class="official-card">
+        <div class="official-top"><img src="${faviconUrl(o.link)}" onerror="this.style.display='none'"><div class="t">${esc(o.title)}</div></div>
+        <div class="card-desc" style="word-break:break-all;">${esc(o.link)}</div>
+        <div class="card-footer">
+          <label class="pin-toggle"><span class="switch"><input type="checkbox" ${o.pinned?'checked':''} data-action="pin" data-type="official" data-id="${o.id}" onclick="event.stopPropagation();pinItem('official','${o.id}')"><span class="slider-switch"></span></span> Pin to top bar</label>
+          <div class="card-actions">
+            <button class="icon-btn" data-action="open" data-type="official" data-id="${o.id}" title="Open"><i class="fa-solid fa-arrow-up-right-from-square"></i></button>
+            <button class="icon-btn" data-action="edit" data-type="official" data-id="${o.id}" title="Edit"><i class="fa-solid fa-pen"></i></button>
+            <button class="icon-btn danger" data-action="delete" data-type="official" data-id="${o.id}" title="Delete"><i class="fa-solid fa-trash"></i></button>
+          </div>
+        </div>
+      </div>`).join('')}
+  </div>`}`;
+}
+
+/* ---------- GLOBAL SEARCH VIEW ---------- */
+function renderSearchView(){
+  const q=(state.query||'').toLowerCase().trim();
+  let groups={chat:[],video:[],tool:[],note:[],file:[],official:[]};
+  if(q){
+    Chats.all().forEach(c=>{if((c.title||'').toLowerCase().includes(q)||(c.description||'').toLowerCase().includes(q)||(c.tags||[]).join(' ').toLowerCase().includes(q))groups.chat.push(c);});
+    Videos.all().forEach(v=>{if((v.title||'').toLowerCase().includes(q)||(v.channel||'').toLowerCase().includes(q))groups.video.push(v);});
+    Tools.all().forEach(t=>{if((t.title||'').toLowerCase().includes(q)||(t.typeCategory||'').toLowerCase().includes(q))groups.tool.push(t);});
+    Notes.all().forEach(n=>{if((n.title||'').toLowerCase().includes(q)||stripHtml(n.content).toLowerCase().includes(q))groups.note.push(n);});
+    Files.all().forEach(f=>{if((f.title||'').toLowerCase().includes(q)||(f.fileName||'').toLowerCase().includes(q))groups.file.push(f);});
+    Official.all().forEach(o=>{if((o.title||'').toLowerCase().includes(q)||(o.link||'').toLowerCase().includes(q))groups.official.push(o);});
+  }
+  const total=Object.values(groups).reduce((s,a)=>s+a.length,0);
+  const typeLabels={chat:['fa-comments','AI Chats'],video:['fa-video','Reference Videos'],tool:['fa-wrench','Tools & Websites'],note:['fa-note-sticky','Notes'],file:['fa-file-lines','Files & Documents'],official:['fa-building-columns','Official Pages']};
+  let resultsHtml='';
+  if(q && total>0){
+    resultsHtml=`<div class="search-results">`+Object.keys(groups).filter(k=>groups[k].length).map(k=>{
+      const entries=groups[k].map(raw=>({type:k,raw,id:raw.id,createdAt:raw.createdAt}));
+      return `<div class="search-group"><h3><i class="fa-solid ${typeLabels[k][0]}"></i> ${typeLabels[k][1]} (${entries.length})</h3>
+        <div class="stream-grid size-medium">${entries.map(e=>k==='official'?officialMiniCard(e.raw):cardHTML(e)).join('')}</div></div>`;
+    }).join('')+`</div>`;
+  }else if(q && total===0){
+    resultsHtml=emptyState('fa-magnifying-glass','No results found',`Nothing matches "${state.query}". Try a different keyword.`);
+  }else{
+    resultsHtml=emptyState('fa-magnifying-glass','Search everything','Type above to search across chats, videos, tools, notes, files and official pages.');
+  }
+  return `
+  <h2 class="section-title"><i class="fa-solid fa-magnifying-glass"></i> Global Search</h2>
+  <div class="search-wrap"><i class="fa-solid fa-magnifying-glass"></i><input type="search" id="searchViewInput" class="search-big-input" placeholder="Search everything..." value="${esc(state.query||'')}"></div>
+  ${resultsHtml}`;
+}
+function officialMiniCard(o){
+  return `<div class="stream-card" data-type="official" data-id="${o.id}">
+    <div class="card-top"><div class="card-icon img"><img src="${faviconUrl(o.link)}" onerror="this.style.display='none'"></div><div class="card-titlewrap"><h4 class="card-title">${esc(o.title)}</h4><span class="card-module">Official Page</span></div></div>
+    <div class="card-footer"><span class="card-date">${formatDate(o.createdAt)}</span>
+      <div class="card-actions">
+        <button class="icon-btn" data-action="open" data-type="official" data-id="${o.id}"><i class="fa-solid fa-arrow-up-right-from-square"></i></button>
+        <button class="icon-btn" data-action="edit" data-type="official" data-id="${o.id}"><i class="fa-solid fa-pen"></i></button>
+        <button class="icon-btn danger" data-action="delete" data-type="official" data-id="${o.id}"><i class="fa-solid fa-trash"></i></button>
+      </div>
+    </div>
+  </div>`;
+}
+
+/* ===================== ITEM ACTIONS ===================== */
+function openItem(type,id){
+  if(type==='chat'){const c=Chats.get(id);if(c)window.open(c.link,'_blank');}
+  else if(type==='video'){const v=Videos.get(id);if(v)window.open(v.url,'_blank');}
+  else if(type==='tool'){const t=Tools.get(id);if(t)window.open(t.link,'_blank');}
+  else if(type==='note'){openNoteModal(Notes.get(id));}
+  else if(type==='file'){
+    const f=Files.get(id);if(!f)return;
+    if(f.mode==='link'){window.open(f.link,'_blank');}
+    else{
+      if(f.fileType && f.fileType.startsWith('image/')){window.open(f.data,'_blank');}
+      else{const a=document.createElement('a');a.href=f.data;a.download=f.fileName||'file';document.body.appendChild(a);a.click();a.remove();}
+    }
+  }
+  else if(type==='official'){const o=Official.get(id);if(o)window.open(o.link,'_blank');}
+}
+function editItem(type,id){
+  if(type==='chat')openChatModal(Chats.get(id));
+  else if(type==='video')openVideoModal(Videos.get(id));
+  else if(type==='tool')openToolModal(Tools.get(id));
+  else if(type==='note')openNoteModal(Notes.get(id));
+  else if(type==='file')openFileModal(Files.get(id));
+  else if(type==='official')openOfficialModal(Official.get(id));
+}
+const STORE_MAP={chat:Chats,video:Videos,tool:Tools,note:Notes,file:Files,official:Official};
+function deleteItem(type,id){
+  const store=STORE_MAP[type];if(!store)return;
+  const obj=store.get(id);
+  if(!confirm(`Delete "${obj? obj.title:'this item'}"? This cannot be undone.`))return;
+  store.remove(id);
+  showToast('Deleted successfully','success');
+  render();
+}
+function pinItem(type,id){
+  if(type==='chat'){const c=Chats.get(id);Chats.update(id,{pinned:!c.pinned});}
+  else if(type==='official'){const o=Official.get(id);Official.update(id,{pinned:!o.pinned});}
+  render();
+}
+function deleteModuleCascade(id){
+  const mod=getModuleById(id);if(!mod)return;
+  if(!confirm(`Delete module "${mod.name}" and all its submodules? Items inside will be moved to Uncategorized.`))return;
+  const ids=new Set(getDescendantIds(id));
+  let modules=Modules.all().filter(m=>!ids.has(m.id));
+  Modules.save(modules);
+  [Chats,Videos,Tools,Notes,Files].forEach(store=>{
+    const arr=store.all();let changed=false;
+    arr.forEach(it=>{if(ids.has(it.moduleId)){it.moduleId=null;changed=true;}});
+    if(changed)store.save(arr);
+  });
+  if(state.moduleId && ids.has(state.moduleId)){state.view='home';state.moduleId=null;}
+  showToast('Module deleted','success');
+  render();
+}
+
+/* ===================== MODALS: CHAT ===================== */
+function openChatModal(existing){
+  const isEdit=!!existing;
+  const platformOpts=Object.keys(PLATFORMS).map(k=>`<option value="${k}" ${existing&&existing.platformKey===k?'selected':''}>${PLATFORMS[k].name}</option>`).join('');
+  const html=`
+  <div class="modal-head"><h3>${isEdit?'Edit':'Add'} AI Chat</h3><button class="modal-close" data-close><i class="fa-solid fa-xmark"></i></button></div>
+  <form id="chatForm">
+    <div class="form-group"><label>Chat Link</label><input type="url" id="f_link" required placeholder="https://chatgpt.com/share/..." value="${existing?esc(existing.link):''}"></div>
+    <div class="form-group"><label>Title</label><input type="text" id="f_title" required placeholder="e.g. Keyword clustering brainstorm" value="${existing?esc(existing.title):''}"></div>
+    <div class="form-row">
+      <div class="form-group"><label>Module</label><select id="f_module">${buildModuleOptions(existing?existing.moduleId:null)}</select></div>
+      <div class="form-group"><label>Platform</label><select id="f_platform">${platformOpts}</select></div>
+    </div>
+    <div class="preview-row" id="platformPreview"></div>
+    <div class="form-group"><label>Tags (comma separated)</label><input type="text" id="f_tags" placeholder="seo, outline, client-x" value="${existing&&existing.tags?esc(existing.tags.join(', ')):''}"></div>
+    <div class="form-group"><label>Description</label><textarea id="f_desc" placeholder="What is this chat about?">${existing?esc(existing.description||''):''}</textarea></div>
+    <div class="form-group switch-row"><span class="switch"><input type="checkbox" id="f_pinned" ${existing&&existing.pinned?'checked':''}><span class="slider-switch"></span></span><span>Pin to top of module stream</span></div>
+    <div class="modal-actions"><button type="button" class="btn-secondary" data-close>Cancel</button><button type="submit" class="btn-primary">${isEdit?'Save Changes':'Add Chat'}</button></div>
+  </form>`;
+  openModal(html);
+  const linkInput=document.getElementById('f_link');
+  const platformSelect=document.getElementById('f_platform');
+  let manualOverride=isEdit;
+  function updatePreview(){
+    const key=platformSelect.value;const p=PLATFORMS[key];
+    document.getElementById('platformPreview').innerHTML=`<div class="card-icon" style="background:${p.color}22;color:${p.color};width:38px;height:38px;"><i class="${p.icon}"></i></div><span style="font-size:.82rem;font-weight:700;color:${p.color}">${p.name} detected</span>`;
+  }
+  if(!platformSelect.value)platformSelect.value=existing?existing.platformKey:'other';
+  updatePreview();
+  linkInput.addEventListener('input',()=>{
+    if(!manualOverride){const key=detectPlatformKey(linkInput.value);platformSelect.value=key;updatePreview();}
+  });
+  platformSelect.addEventListener('change',()=>{manualOverride=true;updatePreview();});
+  bindModalClose();
+  document.getElementById('chatForm').addEventListener('submit',e=>{
+    e.preventDefault();
+    const link=document.getElementById('f_link').value.trim();
+    const title=document.getElementById('f_title').value.trim();
+    const moduleId=document.getElementById('f_module').value||null;
+    const platformKey=platformSelect.value;
+    const tags=document.getElementById('f_tags').value.split(',').map(t=>t.trim()).filter(Boolean);
+    const description=document.getElementById('f_desc').value.trim();
+    const pinned=document.getElementById('f_pinned').checked;
+    if(isEdit){Chats.update(existing.id,{link,title,moduleId,platformKey,tags,description,pinned});showToast('Chat updated');}
+    else{Chats.add({id:uid(),link,title,moduleId,platformKey,tags,description,pinned,createdAt:Date.now()});showToast('Chat added');}
+    closeModal();render();
+  });
+}
+
+/* ===================== MODALS: VIDEO ===================== */
+function openVideoModal(existing){
+  const isEdit=!!existing;
+  const html=`
+  <div class="modal-head"><h3>${isEdit?'Edit':'Add'} Reference Video</h3><button class="modal-close" data-close><i class="fa-solid fa-xmark"></i></button></div>
+  <form id="videoForm">
+    <div class="form-group"><label>YouTube URL</label><input type="url" id="f_url" required placeholder="https://youtube.com/watch?v=..." value="${existing?esc(existing.url):''}"></div>
+    <div class="hint" id="fetchStatus"></div>
+    <div class="preview-row" id="ytPreview">${existing&&existing.thumbnail?`<img class="yt-thumb" src="${esc(existing.thumbnail)}">`:''}</div>
+    <div class="form-group"><label>Title</label><input type="text" id="f_title" required placeholder="Video title" value="${existing?esc(existing.title):''}"></div>
+    <div class="form-group"><label>Channel Name</label><input type="text" id="f_channel" placeholder="Channel name" value="${existing?esc(existing.channel||''):''}"></div>
+    <div class="form-group"><label>Module</label><select id="f_module">${buildModuleOptions(existing?existing.moduleId:null)}</select></div>
+    <input type="hidden" id="f_thumb" value="${existing?esc(existing.thumbnail||''):''}">
+    <div class="modal-actions"><button type="button" class="btn-secondary" data-close>Cancel</button><button type="submit" class="btn-primary">${isEdit?'Save Changes':'Add Video'}</button></div>
+  </form>`;
+  openModal(html);
+  bindModalClose();
+  const urlInput=document.getElementById('f_url');
+  const doFetch=debounce(async()=>{
+    const url=urlInput.value.trim();
+    if(!url || !extractYoutubeId(url))return;
+    document.getElementById('fetchStatus').textContent='Fetching video details...';
+    const info=await fetchYoutubeInfo(url);
+    document.getElementById('fetchStatus').textContent='';
+    if(info){
+      if(info.title)document.getElementById('f_title').value=info.title;
+      if(info.channel)document.getElementById('f_channel').value=info.channel;
+      if(info.thumbnail){document.getElementById('f_thumb').value=info.thumbnail;document.getElementById('ytPreview').innerHTML=`<img class="yt-thumb" src="${info.thumbnail}">`;}
+    }
+  },500);
+  urlInput.addEventListener('input',doFetch);
+  document.getElementById('videoForm').addEventListener('submit',e=>{
+    e.preventDefault();
+    const url=urlInput.value.trim();
+    const title=document.getElementById('f_title').value.trim();
+    const channel=document.getElementById('f_channel').value.trim();
+    const moduleId=document.getElementById('f_module').value||null;
+    const thumbnail=document.getElementById('f_thumb').value||'';
+    if(isEdit){Videos.update(existing.id,{url,title,channel,moduleId,thumbnail});showToast('Video updated');}
+    else{Videos.add({id:uid(),url,title,channel,moduleId,thumbnail,createdAt:Date.now()});showToast('Video added');}
+    closeModal();render();
+  });
+}
+
+/* ===================== MODALS: TOOL ===================== */
+function openToolModal(existing){
+  const isEdit=!!existing;
+  const iconGrid=TOOL_ICONS.map(ic=>`<button type="button" class="icon-pick ${existing&&existing.customIcon===ic?'active':''}" data-icon="${ic}"><i class="${ic}"></i></button>`).join('');
+  const html=`
+  <div class="modal-head"><h3>${isEdit?'Edit':'Add'} Tool / Website</h3><button class="modal-close" data-close><i class="fa-solid fa-xmark"></i></button></div>
+  <form id="toolForm">
+    <div class="form-group"><label>Link</label><input type="url" id="f_link" required placeholder="https://example.com" value="${existing?esc(existing.link):''}"></div>
+    <div class="form-group"><label>Title</label><input type="text" id="f_title" required placeholder="Tool name" value="${existing?esc(existing.title):''}"></div>
+    <div class="form-row">
+      <div class="form-group"><label>Module</label><select id="f_module">${buildModuleOptions(existing?existing.moduleId:null)}</select></div>
+      <div class="form-group"><label>Type Category</label><select id="f_type">
+        ${['Tool','Spreadsheet','Document','Website','Template','Other'].map(t=>`<option ${existing&&existing.typeCategory===t?'selected':''}>${t}</option>`).join('')}
+      </select></div>
+    </div>
+    <div class="form-group switch-row"><span class="switch"><input type="checkbox" id="f_custom" ${existing&&existing.useCustomIcon?'checked':''}><span class="slider-switch"></span></span><span>Use custom icon instead of favicon</span></div>
+    <div id="faviconPreview" class="preview-row ${existing&&existing.useCustomIcon?'hidden':''}"><img id="favImg" src="${existing?esc(existing.favicon||''):''}" onerror="this.style.opacity='0.2'"><span class="hint">Favicon auto-detected from link</span></div>
+    <div id="iconGridWrap" class="${existing&&existing.useCustomIcon?'':'hidden'}"><label>Pick an icon</label><div class="icon-grid">${iconGrid}</div></div>
+    <input type="hidden" id="f_customIcon" value="${existing?esc(existing.customIcon||TOOL_ICONS[0]):TOOL_ICONS[0]}">
+    <div class="modal-actions"><button type="button" class="btn-secondary" data-close>Cancel</button><button type="submit" class="btn-primary">${isEdit?'Save Changes':'Add Tool'}</button></div>
+  </form>`;
+  openModal(html);
+  bindModalClose();
+  const linkInput=document.getElementById('f_link');
+  linkInput.addEventListener('input',()=>{document.getElementById('favImg').src=faviconUrl(linkInput.value);});
+  const customToggle=document.getElementById('f_custom');
+  customToggle.addEventListener('change',()=>{
+    document.getElementById('faviconPreview').classList.toggle('hidden',customToggle.checked);
+    document.getElementById('iconGridWrap').classList.toggle('hidden',!customToggle.checked);
+  });
+  document.querySelectorAll('.icon-pick').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      document.querySelectorAll('.icon-pick').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('f_customIcon').value=btn.dataset.icon;
+    });
+  });
+  document.getElementById('toolForm').addEventListener('submit',e=>{
+    e.preventDefault();
+    const link=linkInput.value.trim();
+    const title=document.getElementById('f_title').value.trim();
+    const moduleId=document.getElementById('f_module').value||null;
+    const typeCategory=document.getElementById('f_type').value;
+    const useCustomIcon=customToggle.checked;
+    const customIcon=document.getElementById('f_customIcon').value;
+    const favicon=faviconUrl(link);
+    if(isEdit){Tools.update(existing.id,{link,title,moduleId,typeCategory,useCustomIcon,customIcon,favicon});showToast('Tool updated');}
+    else{Tools.add({id:uid(),link,title,moduleId,typeCategory,useCustomIcon,customIcon,favicon,createdAt:Date.now()});showToast('Tool added');}
+    closeModal();render();
+  });
+}
+
+/* ===================== MODALS: NOTE ===================== */
+function openNoteModal(existing){
+  const isEdit=!!existing;
+  const mode=existing?existing.mode:'rich';
+  const html=`
+  <div class="modal-head"><h3>${isEdit?'Edit':'Add'} Note</h3><button class="modal-close" data-close><i class="fa-solid fa-xmark"></i></button></div>
+  <form id="noteForm">
+    <div class="form-group"><label>Title</label><input type="text" id="f_title" required placeholder="Note title" value="${existing?esc(existing.title):''}"></div>
+    <div class="form-group"><label>Module</label><select id="f_module">${buildModuleOptions(existing?existing.moduleId:null)}</select></div>
+    <div class="form-group">
+      <label>Content</label>
+      <div class="toggle-group" id="editorToggle">
+        <button type="button" data-mode="rich" class="${mode==='rich'?'active':''}">Rich Text</button>
+        <button type="button" data-mode="markdown" class="${mode==='markdown'?'active':''}">Markdown</button>
+      </div>
+      <div id="richWrap" class="${mode==='rich'?'':'hidden'}">
+        <div class="editor-toolbar">
+          <button type="button" data-cmd="bold" title="Bold"><i class="fa-solid fa-bold"></i></button>
+          <button type="button" data-cmd="italic" title="Italic"><i class="fa-solid fa-italic"></i></button>
+          <button type="button" data-cmd="underline" title="Underline"><i class="fa-solid fa-underline"></i></button>
+          <button type="button" data-cmd="formatBlock" data-val="H2" title="Heading"><i class="fa-solid fa-heading"></i></button>
+          <button type="button" data-cmd="insertUnorderedList" title="Bullet List"><i class="fa-solid fa-list-ul"></i></button>
+          <button type="button" data-cmd="insertOrderedList" title="Numbered List"><i class="fa-solid fa-list-ol"></i></button>
+          <button type="button" data-cmd="createLink" title="Link"><i class="fa-solid fa-link"></i></button>
+        </div>
+        <div class="rich-editor" id="richEditor" contenteditable="true">${existing&&existing.mode==='rich'?existing.content:''}</div>
+      </div>
+      <div id="mdWrap" class="${mode==='markdown'?'':'hidden'}">
+        <textarea id="mdEditor" rows="7" placeholder="# Heading&#10;**bold** *italic*&#10;- bullet item&#10;[link](https://...)">${existing&&existing.mode==='markdown'?esc(existing.content):''}</textarea>
+        <div class="hint">Supports # headings, **bold**, *italic*, - lists, and [text](url) links.</div>
+      </div>
+    </div>
+    <div class="modal-actions"><button type="button" class="btn-secondary" data-close>Cancel</button><button type="submit" class="btn-primary">${isEdit?'Save Changes':'Add Note'}</button></div>
+  </form>`;
+  openModal(html);
+  bindModalClose();
+  let currentMode=mode;
+  document.querySelectorAll('#editorToggle button').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      currentMode=btn.dataset.mode;
+      document.querySelectorAll('#editorToggle button').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('richWrap').classList.toggle('hidden',currentMode!=='rich');
+      document.getElementById('mdWrap').classList.toggle('hidden',currentMode!=='markdown');
+    });
+  });
+  document.querySelectorAll('.editor-toolbar [data-cmd]').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      document.getElementById('richEditor').focus();
+      const cmd=btn.dataset.cmd;
+      if(cmd==='createLink'){const url=prompt('Enter URL:');if(url)document.execCommand(cmd,false,url);}
+      else if(cmd==='formatBlock')document.execCommand(cmd,false,btn.dataset.val);
+      else document.execCommand(cmd,false,null);
+    });
+  });
+  document.getElementById('noteForm').addEventListener('submit',e=>{
+    e.preventDefault();
+    const title=document.getElementById('f_title').value.trim();
+    const moduleId=document.getElementById('f_module').value||null;
+    const content=currentMode==='rich'? document.getElementById('richEditor').innerHTML : document.getElementById('mdEditor').value;
+    if(isEdit){Notes.update(existing.id,{title,moduleId,content,mode:currentMode});showToast('Note updated');}
+    else{Notes.add({id:uid(),title,moduleId,content,mode:currentMode,createdAt:Date.now()});showToast('Note added');}
+    closeModal();render();
+  });
+}
+
+/* ===================== MODALS: FILE ===================== */
+function openFileModal(existing){
+  const isEdit=!!existing;
+  const html=`
+  <div class="modal-head"><h3>${isEdit?'Edit':'Add'} File / Document</h3><button class="modal-close" data-close><i class="fa-solid fa-xmark"></i></button></div>
+  <form id="fileForm">
+    <div class="form-group"><label>Title</label><input type="text" id="f_title" required placeholder="File title" value="${existing?esc(existing.title):''}"></div>
+    <div class="form-group"><label>Module</label><select id="f_module">${buildModuleOptions(existing?existing.moduleId:null)}</select></div>
+    <div class="form-group" id="fileInputWrap">
+      <label>Upload File <span class="hint">(max 1MB for in-app storage)</span></label>
+      <input type="file" id="f_file">
+      <div id="fileWarn" class="warn-box hidden"><i class="fa-solid fa-triangle-exclamation"></i><span>File too large for local storage (1MB limit). Please paste a link to Google Drive / Dropbox instead below.</span></div>
+      <div class="preview-row" id="filePreview"></div>
+    </div>
+    <div class="form-group">
+      <button type="button" class="btn-small" id="toggleLinkMode"><i class="fa-solid fa-link"></i> Use a link instead</button>
+    </div>
+    <div class="form-group hidden" id="linkWrap"><label>External Link (Google Drive / Dropbox / etc.)</label><input type="url" id="f_filelink" placeholder="https://drive.google.com/..." value="${existing&&existing.mode==='link'?esc(existing.link):''}"></div>
+    <div class="modal-actions"><button type="button" class="btn-secondary" data-close>Cancel</button><button type="submit" class="btn-primary">${isEdit?'Save Changes':'Add File'}</button></div>
+  </form>`;
+  openModal(html);
+  bindModalClose();
+  let fileData=existing&&existing.mode==='base64'?{data:existing.data,fileName:existing.fileName,fileType:existing.fileType,size:existing.size}:null;
+  let linkMode=existing?existing.mode==='link':false;
+  const linkWrap=document.getElementById('linkWrap');
+  const fileInputWrap=document.getElementById('fileInputWrap');
+  function syncMode(){
+    linkWrap.classList.toggle('hidden',!linkMode);
+    fileInputWrap.classList.toggle('hidden',linkMode);
+  }
+  syncMode();
+  if(fileData){
+    const prev=document.getElementById('filePreview');
+    if(fileData.fileType && fileData.fileType.startsWith('image/'))prev.innerHTML=`<img src="${fileData.data}" style="width:60px;height:60px;object-fit:cover;border-radius:8px;"><span>${esc(fileData.fileName)}</span>`;
+    else prev.innerHTML=`<i class="fa-solid fa-file-lines" style="font-size:1.6rem;color:var(--gray-500)"></i><span>${esc(fileData.fileName)}</span>`;
+  }
+  document.getElementById('toggleLinkMode').addEventListener('click',()=>{linkMode=!linkMode;syncMode();});
+  document.getElementById('f_file').addEventListener('change',(e)=>{
+    const file=e.target.files[0];
+    if(!file)return;
+    const warn=document.getElementById('fileWarn');
+    if(file.size>=1024*1024){
+      warn.classList.remove('hidden');
+      e.target.value='';
+      linkMode=true;syncMode();
+      return;
+    }
+    warn.classList.add('hidden');
+    const reader=new FileReader();
+    reader.onload=()=>{
+      fileData={data:reader.result,fileName:file.name,fileType:file.type,size:file.size};
+      const prev=document.getElementById('filePreview');
+      if(file.type.startsWith('image/'))prev.innerHTML=`<img src="${reader.result}" style="width:60px;height:60px;object-fit:cover;border-radius:8px;"><span>${esc(file.name)}</span>`;
+      else prev.innerHTML=`<i class="fa-solid fa-file-lines" style="font-size:1.6rem;color:var(--gray-500)"></i><span>${esc(file.name)}</span>`;
+    };
+    reader.readAsDataURL(file);
+  });
+  document.getElementById('fileForm').addEventListener('submit',e=>{
+    e.preventDefault();
+    const title=document.getElementById('f_title').value.trim();
+    const moduleId=document.getElementById('f_module').value||null;
+    if(linkMode){
+      const link=document.getElementById('f_filelink').value.trim();
+      if(!link){alert('Please paste a link.');return;}
+      const payload={title,moduleId,mode:'link',link,fileName:title,fileType:'',data:null,size:0};
+      if(isEdit){Files.update(existing.id,payload);showToast('File updated');}
+      else{Files.add(Object.assign({id:uid(),createdAt:Date.now()},payload));showToast('File added');}
+    }else{
+      if(!fileData && !isEdit){alert('Please choose a file or switch to link mode.');return;}
+      const payload=fileData? {title,moduleId,mode:'base64',data:fileData.data,fileName:fileData.fileName,fileType:fileData.fileType,size:fileData.size,link:''} : {title,moduleId};
+      if(isEdit){Files.update(existing.id,payload);showToast('File updated');}
+      else{Files.add(Object.assign({id:uid(),createdAt:Date.now()},payload));showToast('File added');}
+    }
+    closeModal();render();
+  });
+}
+
+/* ===================== MODALS: OFFICIAL ===================== */
+function openOfficialModal(existing){
+  const isEdit=!!existing;
+  const html=`
+  <div class="modal-head"><h3>${isEdit?'Edit':'Add'} Official Page</h3><button class="modal-close" data-close><i class="fa-solid fa-xmark"></i></button></div>
+  <form id="officialForm">
+    <div class="form-group"><label>Title</label><input type="text" id="f_title" required placeholder="e.g. iSkills Portal" value="${existing?esc(existing.title):''}"></div>
+    <div class="form-group"><label>Link</label><input type="url" id="f_link" required placeholder="https://..." value="${existing?esc(existing.link):''}"></div>
+    <div class="form-group switch-row"><span class="switch"><input type="checkbox" id="f_pinned" ${existing&&existing.pinned?'checked':''}><span class="slider-switch"></span></span><span>Pin to Quick Access Bar</span></div>
+    <div class="modal-actions"><button type="button" class="btn-secondary" data-close>Cancel</button><button type="submit" class="btn-primary">${isEdit?'Save Changes':'Add Page'}</button></div>
+  </form>`;
+  openModal(html);
+  bindModalClose();
+  document.getElementById('officialForm').addEventListener('submit',e=>{
+    e.preventDefault();
+    const title=document.getElementById('f_title').value.trim();
+    const link=document.getElementById('f_link').value.trim();
+    const pinned=document.getElementById('f_pinned').checked;
+    if(isEdit){Official.update(existing.id,{title,link,pinned});showToast('Official page updated');}
+    else{Official.add({id:uid(),title,link,pinned,createdAt:Date.now()});showToast('Official page added');}
+    closeModal();render();
+  });
+}
+
+/* ===================== MODALS: MODULE ===================== */
+function openModuleModal(existing,prefillParentId){
+  const isEdit=!!existing;
+  const excludeIds=isEdit? getDescendantIds(existing.id):[];
+  const parentId=isEdit? existing.parentId : (prefillParentId||'');
+  const html=`
+  <div class="modal-head"><h3>${isEdit?'Edit':'Add'} Module</h3><button class="modal-close" data-close><i class="fa-solid fa-xmark"></i></button></div>
+  <form id="moduleForm">
+    <div class="form-group"><label>Module Name</label><input type="text" id="f_name" required placeholder="e.g. Email Marketing" value="${existing?esc(existing.name):''}"></div>
+    <div class="form-group"><label>Parent Module (optional)</label><select id="f_parent"><option value="">— None (Top Level) —</option>${buildModuleOptions(parentId,excludeIds)}</select></div>
+    <div class="modal-actions"><button type="button" class="btn-secondary" data-close>Cancel</button><button type="submit" class="btn-primary">${isEdit?'Save Changes':'Add Module'}</button></div>
+  </form>`;
+  openModal(html);
+  bindModalClose();
+  document.getElementById('moduleForm').addEventListener('submit',e=>{
+    e.preventDefault();
+    const name=document.getElementById('f_name').value.trim();
+    const parentId=document.getElementById('f_parent').value||null;
+    if(isEdit){Modules.update(existing.id,{name,parentId});showToast('Module updated');}
+    else{const obj={id:uid(),name,parentId,createdAt:Date.now()};Modules.add(obj);showToast('Module added');}
+    closeModal();render();
+  });
+}
+
+function bindModalClose(){
+  document.querySelectorAll('[data-close]').forEach(el=>el.addEventListener('click',closeModal));
+}
+
+/* ===================== QUICK ADD ROUTER ===================== */
+function quickAdd(type){
+  if(type==='chat')openChatModal(null);
+  else if(type==='video')openVideoModal(null);
+  else if(type==='tool')openToolModal(null);
+  else if(type==='note')openNoteModal(null);
+  else if(type==='file')openFileModal(null);
+}
+
+/* ===================== FAB ===================== */
+const fabItems=[
+  {type:'chat',label:'AI Chat',icon:'fa-solid fa-comments',color:'#2563eb'},
+  {type:'video',label:'Video',icon:'fa-solid fa-video',color:'#dc2626'},
+  {type:'tool',label:'Tool / Website',icon:'fa-solid fa-wrench',color:'#059669'},
+  {type:'note',label:'Note',icon:'fa-solid fa-note-sticky',color:'#d97706'},
+  {type:'file',label:'File',icon:'fa-solid fa-file-arrow-up',color:'#7c3aed'},
+  {type:'official',label:'Official Page',icon:'fa-solid fa-building-columns',color:'#0f172a'},
+  {type:'module',label:'Module',icon:'fa-solid fa-layer-group',color:'#0284c7'}
+];
+function renderFabMenu(){
+  const menu=document.getElementById('fabMenu');
+  menu.innerHTML=fabItems.map(f=>`<div class="fab-menu-item"><span class="lbl">${f.label}</span><button style="background:${f.color}" data-fab-type="${f.type}"><i class="${f.icon}"></i></button></div>`).join('');
+}
+function toggleFabMenu(force){
+  const menu=document.getElementById('fabMenu');
+  const fab=document.getElementById('fabBtn');
+  const show=force!==undefined? force : menu.classList.contains('hidden');
+  menu.classList.toggle('hidden',!show);
+  fab.classList.toggle('open',show);
+}
+
+/* ===================== GLOBAL EVENT DELEGATION ===================== */
+document.addEventListener('click',e=>{
+  // fab menu items
+  const fabTypeBtn=e.target.closest('[data-fab-type]');
+  if(fabTypeBtn){
+    toggleFabMenu(false);
+    const type=fabTypeBtn.dataset.fabType;
+    if(type==='module')openModuleModal(null);
+    else if(type==='official')openOfficialModal(null);
+    else quickAdd(type);
+    return;
+  }
+  const actionBtn=e.target.closest('[data-action]');
+  if(actionBtn){
+    const action=actionBtn.dataset.action, type=actionBtn.dataset.type, id=actionBtn.dataset.id;
+    e.stopPropagation();
+    if(action==='open')return openItem(type,id);
+    if(action==='edit')return editItem(type,id);
+    if(action==='delete')return deleteItem(type,id);
+    if(action==='pin')return pinItem(type,id);
+    if(action==='open-link')return window.open(actionBtn.dataset.url,'_blank');
+    if(action==='add-module')return openModuleModal(null);
+    if(action==='add-sub')return openModuleModal(null,id);
+    if(action==='edit-module')return openModuleModal(Modules.get(id));
+    if(action==='delete-module')return deleteModuleCascade(id);
+    if(action==='add-official')return openOfficialModal(null);
+    if(action==='quick-add')return quickAdd(type);
+    return;
+  }
+  const viewModeBtn=e.target.closest('[data-viewmode]');
+  if(viewModeBtn){settings.viewMode=viewModeBtn.dataset.viewmode;setSettings(settings);renderMain();return;}
+  const filterBtn=e.target.closest('[data-filter]');
+  if(filterBtn){state.typeFilter=filterBtn.dataset.filter;renderMain();return;}
+  const navEl=e.target.closest('[data-nav]');
+  if(navEl){
+    const navType=navEl.dataset.nav;
+    if(navType==='home'){state.view='home';state.moduleId=null;}
+    else if(navType==='search'){state.view='search';}
+    else if(navType==='official'){state.view='official';}
+    else{state.view='module';state.moduleId=navType;state.typeFilter='all';}
+    document.getElementById('sidebar').classList.remove('open');
+    document.getElementById('sidebarBackdrop').classList.remove('show');
+    render();
+    return;
+  }
+  const chevron=e.target.closest('[data-toggle]');
+  if(chevron){
+    const id=chevron.dataset.toggle;
+    if(collapsedModules.has(id))collapsedModules.delete(id);else collapsedModules.add(id);
+    renderSidebar();
+    return;
+  }
+  const card=e.target.closest('.stream-card, .stream-row');
+  if(card && !e.target.closest('[data-action]') && !e.target.closest('a')){
+    const type=card.dataset.type, id=card.dataset.id;
+    if(type==='note')editItem('note',id); else openItem(type,id);
+    return;
+  }
+  // close fab menu if clicked outside
+  if(!e.target.closest('#fabMenu') && !e.target.closest('#fabBtn')){
+    toggleFabMenu(false);
+  }
+});
+
+document.getElementById('fabBtn').addEventListener('click',e=>{e.stopPropagation();toggleFabMenu();});
+document.getElementById('topAddBtn').addEventListener('click',()=>toggleFabMenu(true));
+document.getElementById('hamburgerBtn').addEventListener('click',()=>{
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('sidebarBackdrop').classList.toggle('show');
+});
+document.getElementById('sidebarBackdrop').addEventListener('click',()=>{
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sidebarBackdrop').classList.remove('show');
+});
+document.getElementById('topSearchInput').addEventListener('input',debounce(e=>{
+  state.query=e.target.value;state.view='search';render();
+},150));
+
+/* ===================== INIT ===================== */
+seedIfNeeded();
+renderFabMenu();
+render();
+</script>
+</body>
+</html>
